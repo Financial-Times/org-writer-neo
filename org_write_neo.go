@@ -16,8 +16,15 @@ import (
 
 func main() {
 
+	neoUrl := os.Getenv("NEO_URL")
+	if neoUrl == "" {
+		log.Println("no $NEO_URL set, defaulting to local")
+		neoUrl = "http://localhost:7474/db/data"
+	}
+	log.Printf("connecting to %s\n", neoUrl)
+
 	var err error
-	db, err = neoism.Connect("http://localhost:7474/db/data")
+	db, err = neoism.Connect(neoUrl)
 	if err != nil {
 		panic(err)
 	}
