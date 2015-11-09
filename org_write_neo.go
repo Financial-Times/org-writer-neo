@@ -33,7 +33,7 @@ func main() {
 
 	writeQueue = make(chan organisation, 2048)
 
-	port := 8082
+	port := 8080
 
 	m := mux.NewRouter()
 	http.Handle("/", m)
