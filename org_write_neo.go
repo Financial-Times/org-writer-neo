@@ -222,22 +222,31 @@ func toProps(o organisation) neoism.Props {
 		"uuid": o.UUID,
 	}
 
+	if o.Extinct == true {
+		p["extinct"] = true
+	}
+	if o.FormerNames != nil && len(o.FormerNames) != 0 {
+		p["formerNames"] = o.FormerNames
+	}
+	if o.HiddenLabel != "" {
+		p["hiddenLabel"] = o.HiddenLabel
+	}
 	if o.LegalName != "" {
 		p["legalName"] = o.LegalName
+	}
+	if o.LocalNames != nil && len(o.LocalNames) != 0 {
+		p["localNames"] = o.LocalNames
 	}
 	if o.ProperName != "" {
 		p["properName"] = o.ProperName
 	}
-	if o.FormerNames != nil {
-		p["formerNames"] = o.FormerNames
+	if o.ShortName != "" {
+		p["shortName"] = o.ShortName
 	}
-	if o.TradeNames != nil {
+	if o.TradeNames != nil && len(o.TradeNames) != 0 {
 		p["tradeNames"] = o.TradeNames
 	}
-	if o.Extinct == true {
-		p["extinct"] = true
-	}
-	// TODO: finish this.
+	p["uuid"] = o.UUID
 
 	return neoism.Props(p)
 }
