@@ -253,7 +253,16 @@ func toProps(o organisation) neoism.Props {
 	if o.TradeNames != nil && len(o.TradeNames) != 0 {
 		p["tradeNames"] = o.TradeNames
 	}
+	for _, identifier := range o.Identifiers {
+		if identifier.Authority == fsAuthority {
+			p["factsetIdentifier"] = identifier.IdentifierValue
+		}
+	}
 	p["uuid"] = o.UUID
 
 	return neoism.Props(p)
 }
+
+const (
+	fsAuthority = "http://api.ft.com/system/FACTSET-EDM"
+)
