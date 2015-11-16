@@ -176,8 +176,9 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 
 	queries = append(queries, &neoism.CypherQuery{
 		Statement: `
-			MERGE (n:Organisation {uuid: {uuid}})
+			MERGE (n:Concept {uuid: {uuid}})
 			SET n = {allProps}
+			SET n :Organisation
 			RETURN n
 		`,
 		Parameters: map[string]interface{}{
