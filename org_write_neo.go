@@ -68,18 +68,22 @@ func main() {
 }
 
 func ensureIndexes(db *neoism.Database) {
+	ensureIndex(db, "Organisation", "uuid")
+	ensureIndex(db, "Concept", "uuid")
+}
 
-	indexes, err := db.Indexes("Organisation")
+func ensureIndex(db *neoism.Database, label string, prop string) {
+	indexes, err := db.Indexes(label)
 	if err != nil {
 		panic(err)
 	}
-	if len(indexes) == 0 {
-		if _, err := db.CreateIndex("Organisation", "uuid"); err != nil {
-			panic(err)
+	for _, ind := range indexes {
+		if len(ind.PropertyKeys) == 1 && ind.PropertyKeys[0] == prop {
+			return
 		}
-		if _, err := db.CreateIndex("Industry", "uuid"); err != nil {
-			panic(err)
-		}
+	}
+	if _, err := db.CreateIndex(label, prop); err != nil {
+		panic(err)
 	}
 }
 
