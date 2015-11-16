@@ -96,7 +96,7 @@ func orgWriteLoop() {
 
 	timer := time.NewTimer(1 * time.Second)
 
-	defer println("asdasd")
+	defer println("write loop exited")
 	for {
 		select {
 		case o, ok := <-writeQueue:
