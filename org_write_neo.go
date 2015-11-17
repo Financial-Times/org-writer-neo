@@ -16,15 +16,15 @@ import (
 
 func main() {
 
-	neoUrl := os.Getenv("NEO_URL")
-	if neoUrl == "" {
+	neoURL := os.Getenv("NEO_URL")
+	if neoURL == "" {
 		log.Println("no $NEO_URL set, defaulting to local")
-		neoUrl = "http://localhost:7474/db/data"
+		neoURL = "http://localhost:7474/db/data"
 	}
-	log.Printf("connecting to %s\n", neoUrl)
+	log.Printf("connecting to %s\n", neoURL)
 
 	var err error
-	db, err = neoism.Connect(neoUrl)
+	db, err = neoism.Connect(neoURL)
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func main() {
 	m := mux.NewRouter()
 	http.Handle("/", m)
 
-	m.HandleFunc("/organisations/{uuid}", idWriteHandler).Methods("PUT")
+	m.HandleFunc("/organisations/{uuid}", writeHandler).Methods("PUT")
 	m.HandleFunc("/organisations/", allWriteHandler).Methods("PUT")
 
 	go func() {
@@ -96,7 +96,7 @@ func orgWriteLoop() {
 
 	timer := time.NewTimer(1 * time.Second)
 
-	defer println("write loop exited")
+	defer log.Println("write loop exited")
 	for {
 		select {
 		case o, ok := <-writeQueue:
@@ -147,9 +147,9 @@ func allWriteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func idWriteHandler(w http.ResponseWriter, r *http.Request) {
+func writeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	UUID := vars["uuid"]
+	uuid := vars["uuid"]
 
 	var o organisation
 	dec := json.NewDecoder(r.Body)
@@ -158,9 +158,9 @@ func idWriteHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if o.UUID != UUID {
+	if o.UUID != uuid {
 		fmt.Printf("%v\n", o)
-		http.Error(w, fmt.Sprintf("id does not match: %v %v", o.UUID, UUID), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("id does not match: %v %v", o.UUID, uuid), http.StatusBadRequest)
 		return
 	}
 
