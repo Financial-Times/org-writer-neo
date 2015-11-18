@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Financial-Times/up-neoutil-go"
 	"github.com/gorilla/mux"
 	"github.com/jmcvetta/neoism"
 	"io"
@@ -29,7 +30,10 @@ func main() {
 		panic(err)
 	}
 
-	ensureIndexes(db)
+	neoutil.EnsureIndexes(db, map[string]string{
+		"Organisation": "uuid",
+		"Concept":      "uuid",
+	})
 
 	writeQueue = make(chan []*neoism.CypherQuery, 2048)
 
@@ -65,26 +69,6 @@ func main() {
 	wg.Wait()
 	println("exiting")
 
-}
-
-func ensureIndexes(db *neoism.Database) {
-	ensureIndex(db, "Organisation", "uuid")
-	ensureIndex(db, "Concept", "uuid")
-}
-
-func ensureIndex(db *neoism.Database, label string, prop string) {
-	indexes, err := db.Indexes(label)
-	if err != nil {
-		panic(err)
-	}
-	for _, ind := range indexes {
-		if len(ind.PropertyKeys) == 1 && ind.PropertyKeys[0] == prop {
-			return
-		}
-	}
-	if _, err := db.CreateIndex(label, prop); err != nil {
-		panic(err)
-	}
 }
 
 var db *neoism.Database
