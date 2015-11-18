@@ -110,7 +110,40 @@ func writeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func toQueries(o organisation) []*neoism.CypherQuery {
-	props := toProps(o)
+	p := map[string]interface{}{
+		"uuid": o.UUID,
+	}
+
+	if o.Extinct == true {
+		p["extinct"] = true
+	}
+	if o.FormerNames != nil && len(o.FormerNames) != 0 {
+		p["formerNames"] = o.FormerNames
+	}
+	if o.HiddenLabel != "" {
+		p["hiddenLabel"] = o.HiddenLabel
+	}
+	if o.LegalName != "" {
+		p["legalName"] = o.LegalName
+	}
+	if o.LocalNames != nil && len(o.LocalNames) != 0 {
+		p["localNames"] = o.LocalNames
+	}
+	if o.ProperName != "" {
+		p["properName"] = o.ProperName
+	}
+	if o.ShortName != "" {
+		p["shortName"] = o.ShortName
+	}
+	if o.TradeNames != nil && len(o.TradeNames) != 0 {
+		p["tradeNames"] = o.TradeNames
+	}
+	for _, identifier := range o.Identifiers {
+		if identifier.Authority == fsAuthority {
+			p["factsetIdentifier"] = identifier.IdentifierValue
+		}
+	}
+	p["uuid"] = o.UUID
 
 	var queries []*neoism.CypherQuery
 
@@ -123,7 +156,7 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 		`,
 		Parameters: map[string]interface{}{
 			"uuid":     o.UUID,
-			"allProps": props,
+			"allProps": neoism.Props(p),
 		},
 	})
 
@@ -169,45 +202,6 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 	}
 
 	return queries
-}
-
-func toProps(o organisation) neoism.Props {
-	p := map[string]interface{}{
-		"uuid": o.UUID,
-	}
-
-	if o.Extinct == true {
-		p["extinct"] = true
-	}
-	if o.FormerNames != nil && len(o.FormerNames) != 0 {
-		p["formerNames"] = o.FormerNames
-	}
-	if o.HiddenLabel != "" {
-		p["hiddenLabel"] = o.HiddenLabel
-	}
-	if o.LegalName != "" {
-		p["legalName"] = o.LegalName
-	}
-	if o.LocalNames != nil && len(o.LocalNames) != 0 {
-		p["localNames"] = o.LocalNames
-	}
-	if o.ProperName != "" {
-		p["properName"] = o.ProperName
-	}
-	if o.ShortName != "" {
-		p["shortName"] = o.ShortName
-	}
-	if o.TradeNames != nil && len(o.TradeNames) != 0 {
-		p["tradeNames"] = o.TradeNames
-	}
-	for _, identifier := range o.Identifiers {
-		if identifier.Authority == fsAuthority {
-			p["factsetIdentifier"] = identifier.IdentifierValue
-		}
-	}
-	p["uuid"] = o.UUID
-
-	return neoism.Props(p)
 }
 
 const (
