@@ -201,8 +201,9 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 		queries = append(queries, &neoism.CypherQuery{
 			Statement: `
 			MERGE (n:Organisation {uuid: {uuid}})
-			MERGE (p:Organisation {uuid: {puuid}})
+			MERGE (p:Concept {uuid: {puuid}})
 			MERGE (n)-[r:SUB_ORG_OF]->(p)
+			SET p :Organisation
 		`,
 			Parameters: map[string]interface{}{
 				"uuid":  o.UUID,
@@ -215,8 +216,9 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 		queries = append(queries, &neoism.CypherQuery{
 			Statement: `
 			MERGE (n:Organisation {uuid: {uuid}})
-			MERGE (ic:Industry {uuid: {icuuid}})
+			MERGE (ic:Concept {uuid: {icuuid}})
 			MERGE (n)-[r:IN_INDUSTRY]->(ic)
+			SET ic :Industry
 		`,
 			Parameters: map[string]interface{}{
 				"uuid":   o.UUID,
