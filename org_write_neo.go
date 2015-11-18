@@ -31,6 +31,7 @@ func main() {
 	neoutil.EnsureIndexes(db, map[string]string{
 		"Organisation": "uuid",
 		"Concept":      "uuid",
+		"Industry":     "uuid",
 	})
 
 	port := 8080
