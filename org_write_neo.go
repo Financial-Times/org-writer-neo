@@ -126,63 +126,42 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 	}
 	p["uuid"] = o.UUID
 
-	var queries []*neoism.CypherQuery
+	parms := map[string]interface{}{
+		"uuid":     o.UUID,
+		"allProps": neoism.Props(p),
+		"puuid":    o.ParentOrganisation,
+		"icuuid":   o.IndustryClassification,
+	}
 
-	queries = append(queries, &neoism.CypherQuery{
-		Statement: `
+	statement := `
 			MERGE (n:Concept {uuid: {uuid}})
 			SET n = {allProps}
 			SET n :Organisation
-			RETURN n
-		`,
-		Parameters: map[string]interface{}{
-			"uuid":     o.UUID,
-			"allProps": neoism.Props(p),
-		},
-	})
+		`
 
-	t := string(o.Type)
-	if t != "Organisation" && t != "" {
-		queries = append(queries, &neoism.CypherQuery{
-			Statement: fmt.Sprintf("MERGE (n:Organisation {uuid: {uuid}}) SET n :%s", t),
-			Parameters: map[string]interface{}{
-				"uuid": o.UUID,
-			},
-		})
+	if o.Type != "Organisation" && o.Type != "" {
+		statement += fmt.Sprintf("SET n :%s\n", o.Type)
 	}
 
 	if o.ParentOrganisation != "" {
-		queries = append(queries, &neoism.CypherQuery{
-			Statement: `
-			MERGE (n:Organisation {uuid: {uuid}})
+		statement += `
 			MERGE (p:Concept {uuid: {puuid}})
-			MERGE (n)-[r:SUB_ORG_OF]->(p)
+			MERGE (n)-[:SUB_ORG_OF]->(p)
 			SET p :Organisation
-		`,
-			Parameters: map[string]interface{}{
-				"uuid":  o.UUID,
-				"puuid": o.ParentOrganisation,
-			},
-		})
+		`
 	}
 
 	if o.IndustryClassification != "" {
-		queries = append(queries, &neoism.CypherQuery{
-			Statement: `
-			MERGE (n:Organisation {uuid: {uuid}})
+		statement += `
 			MERGE (ic:Concept {uuid: {icuuid}})
-			MERGE (n)-[r:IN_INDUSTRY]->(ic)
+			MERGE (n)-[:IN_INDUSTRY]->(ic)
 			SET ic :Industry
-		`,
-			Parameters: map[string]interface{}{
-				"uuid":   o.UUID,
-				"icuuid": o.IndustryClassification,
-			},
-		})
-
+		`
 	}
 
-	return queries
+	return []*neoism.CypherQuery{
+		&neoism.CypherQuery{Statement: statement, Parameters: parms},
+	}
 }
 
 const (
