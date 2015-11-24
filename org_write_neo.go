@@ -6,7 +6,6 @@ import (
 	"github.com/Financial-Times/up-neoutil-go"
 	"github.com/gorilla/mux"
 	"github.com/jmcvetta/neoism"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -40,7 +39,6 @@ func main() {
 	http.Handle("/", m)
 
 	m.HandleFunc("/organisations/{uuid}", writeHandler).Methods("PUT")
-	m.HandleFunc("/organisations/", allWriteHandler).Methods("PUT")
 
 	go func() {
 		log.Printf("listening on %d", port)
@@ -65,27 +63,6 @@ func main() {
 var db *neoism.Database
 
 var bw *neoutil.BatchWriter
-
-func allWriteHandler(w http.ResponseWriter, r *http.Request) {
-
-	dec := json.NewDecoder(r.Body)
-
-	for {
-		var o organisation
-		err := dec.Decode(&o)
-		if err == io.ErrUnexpectedEOF {
-			return
-		}
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		bw.WriteQueue <- toQueries(o)
-	}
-
-	w.WriteHeader(http.StatusAccepted)
-}
 
 func writeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
