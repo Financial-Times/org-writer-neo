@@ -131,6 +131,7 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 	}
 	if o.ProperName != "" {
 		p["properName"] = o.ProperName
+		p["prefLabel"] = o.ProperName
 	}
 	if o.ShortName != "" {
 		p["shortName"] = o.ShortName
