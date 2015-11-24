@@ -142,6 +142,9 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 		if identifier.Authority == fsAuthority {
 			p["factsetIdentifier"] = identifier.IdentifierValue
 		}
+		if identifier.Authority == leiAuthority {
+			p["leiIdentifier"] = identifier.IdentifierValue
+		}
 	}
 	p["uuid"] = o.UUID
 
@@ -205,5 +208,6 @@ func toQueries(o organisation) []*neoism.CypherQuery {
 }
 
 const (
-	fsAuthority = "http://api.ft.com/system/FACTSET-EDM"
+	fsAuthority  = "http://api.ft.com/system/FACTSET-EDM"
+	leiAuthority = "http://api.ft.com/system/LEI"
 )
