@@ -47,21 +47,21 @@ func main() {
 		}
 	}()
 
-	sw = neoutil.NewSafeWriter(db, 1024)
+	cw = neoutil.NewSafeWriter(db, 1024)
 
 	// wait for ctrl-c
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
 
-	sw.Close()
+	cw.Close()
 
 	log.Println("exiting")
 }
 
 var db *neoism.Database
 
-var sw neoutil.CypherWriter
+var cw neoutil.CypherWriter
 
 func writeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -80,7 +80,7 @@ func writeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = sw.WriteCypher(toQueries(o))
+	err = cw.WriteCypher(toQueries(o))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
