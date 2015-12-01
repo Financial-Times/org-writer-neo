@@ -63,12 +63,12 @@ var db *neoism.Database
 
 var cw neoutil.CypherWriter
 
-func writeHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func writeHandler(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
 	uuid := vars["uuid"]
 
 	var o organisation
-	dec := json.NewDecoder(r.Body)
+	dec := json.NewDecoder(req.Body)
 	err := dec.Decode(&o)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
