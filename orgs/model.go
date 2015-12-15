@@ -1,4 +1,4 @@
-package main
+package orgs
 
 type Organisation struct {
 	Extinct                bool         `json:"extinct,omitempty"`

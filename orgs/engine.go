@@ -1,97 +1,36 @@
-package main
+package orgs
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/Financial-Times/up-neoutil-go"
-	"github.com/gorilla/mux"
-	"github.com/jawher/mow.cli"
 	"github.com/jmcvetta/neoism"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
+	"strings"
 )
 
-func main() {
-	app := cli.App("org-api-neo", "A RESTful API for managing Organisations in neo4j")
-	neoURL := app.StringOpt("neo-url", "http://localhost:7474/db/data", "neo4j endpoint URL")
-	port := app.IntOpt("port", 8080, "Port to listen on")
+type RolesNeoEngine struct{}
 
-	app.Action = func() {
-		runServer(*neoURL, *port)
-	}
-
-	app.Run(os.Args)
+func (bnc RolesNeoEngine) DecodeJSON(dec *json.Decoder) (interface{}, string, error) {
+	b := Organisation{}
+	err := dec.Decode(&b)
+	return b, b.UUID, err
 }
 
-func runServer(neoURL string, port int) {
-	var err error
-	db, err = neoism.Connect(neoURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Printf("connected to %s\n", neoURL)
-	neoutil.EnsureIndexes(db, map[string]string{
+func (bnc RolesNeoEngine) SuggestedIndexes() map[string]string {
+	return map[string]string{
 		"Organisation": "uuid",
 		"Concept":      "uuid",
 		"Industry":     "uuid",
-	})
-
-	m := mux.NewRouter()
-	http.Handle("/", m)
-
-	m.HandleFunc("/organisations/{uuid}", writeHandler).Methods("PUT")
-
-	cw = neoutil.NewSafeWriter(db, 1024)
-
-	go func() {
-		log.Printf("listening on %d", port)
-		if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
-			log.Printf("web stuff failed: %v\n", err)
-		}
-	}()
-
-	// wait for ctrl-c
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	<-c
-
-	cw.Close()
-
-	log.Println("exiting")
-}
-
-var db *neoism.Database
-
-var cw neoutil.CypherWriter
-
-func writeHandler(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	uuid := vars["uuid"]
-
-	var o Organisation
-	dec := json.NewDecoder(req.Body)
-	err := dec.Decode(&o)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	if o.UUID != uuid {
-		fmt.Printf("%v\n", o)
-		http.Error(w, fmt.Sprintf("id does not match: %v %v", o.UUID, uuid), http.StatusBadRequest)
-		return
-	}
-
-	err = cw.WriteCypher(toQueries(o))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
 }
 
-func toQueries(o Organisation) []*neoism.CypherQuery {
+func (bnc RolesNeoEngine) Read(cr neoutil.CypherRunner, identity string) (interface{}, bool, error) {
+	panic("not implemented")
+}
+
+func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{}) error {
+	o := obj.(Organisation)
+
 	p := map[string]interface{}{
 		"uuid": o.UUID,
 	}
@@ -164,9 +103,20 @@ func toQueries(o Organisation) []*neoism.CypherQuery {
 		`
 	}
 
-	return []*neoism.CypherQuery{
+	queries := []*neoism.CypherQuery{
 		&neoism.CypherQuery{Statement: statement, Parameters: parms},
 	}
+
+	return cr.WriteCypher(queries)
+}
+
+func (bnc RolesNeoEngine) Delete(cr neoutil.CypherRunner, identity string) (bool, error) {
+	panic("not implemented")
+}
+
+func uriToUUID(uri string) string {
+	// TODO: make this more robust
+	return strings.Replace(uri, "http://api.ft.com/things/", "", 1)
 }
 
 const (
