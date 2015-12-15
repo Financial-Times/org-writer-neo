@@ -1,10 +1,10 @@
 package main
 
-type organisation struct {
+type Organisation struct {
 	Extinct                bool         `json:"extinct,omitempty"`
 	FormerNames            []string     `json:"formerNames,omitempty"`
 	HiddenLabel            string       `json:"hiddenLabel,omitempty"`
-	Identifiers            []identifier `json:"identifiers,omitempty"`
+	Identifiers            []Identifier `json:"identifiers,omitempty"`
 	IndustryClassification string       `json:"industryClassification,omitempty"`
 	LegalName              string       `json:"legalName,omitempty"`
 	LocalNames             []string     `json:"localNames,omitempty"`
@@ -16,7 +16,7 @@ type organisation struct {
 	UUID                   string       `json:"uuid"`
 }
 
-type identifier struct {
+type Identifier struct {
 	Authority       string `json:"authority"`
 	IdentifierValue string `json:"identifierValue"`
 }

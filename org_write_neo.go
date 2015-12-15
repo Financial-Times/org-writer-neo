@@ -71,7 +71,7 @@ func writeHandler(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	uuid := vars["uuid"]
 
-	var o organisation
+	var o Organisation
 	dec := json.NewDecoder(req.Body)
 	err := dec.Decode(&o)
 	if err != nil {
@@ -91,7 +91,7 @@ func writeHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func toQueries(o organisation) []*neoism.CypherQuery {
+func toQueries(o Organisation) []*neoism.CypherQuery {
 	p := map[string]interface{}{
 		"uuid": o.UUID,
 	}
