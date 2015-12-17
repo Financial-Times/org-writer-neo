@@ -107,7 +107,7 @@ func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{
 		&neoism.CypherQuery{Statement: statement, Parameters: parms},
 	}
 
-	return cr.WriteCypher(queries)
+	return cr.CypherBatch(queries)
 }
 
 func (bnc RolesNeoEngine) Delete(cr neoutil.CypherRunner, identity string) (bool, error) {
