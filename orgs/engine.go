@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Financial-Times/up-neoutil-go"
-	"github.com/jmcvetta/neoism"
+	"github.com/Financial-Times/neoism"
 	"strings"
 )
 
