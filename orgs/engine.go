@@ -20,7 +20,7 @@ func (bnc RolesNeoEngine) SuggestedIndexes() map[string]string {
 	return map[string]string{
 		"Organisation": "uuid",
 		"Concept":      "uuid",
-		"Industry":     "uuid",
+		"Thing":        "uuid",
 	}
 }
 
@@ -78,8 +78,9 @@ func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{
 	}
 
 	statement := `
-			MERGE (n:Concept {uuid: {uuid}})
+			MERGE (n:Thing {uuid: {uuid}})
 			SET n = {allProps}
+			SET n :Concept
 			SET n :Organisation
 		`
 
@@ -89,17 +90,15 @@ func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{
 
 	if o.ParentOrganisation != "" {
 		statement += `
-			MERGE (p:Concept {uuid: {puuid}})
+			MERGE (p:Thing {uuid: {puuid}})
 			MERGE (n)-[:SUB_ORG_OF]->(p)
-			SET p :Organisation
 		`
 	}
 
 	if o.IndustryClassification != "" {
 		statement += `
-			MERGE (ic:Concept {uuid: {icuuid}})
+			MERGE (ic:Thing {uuid: {icuuid}})
 			MERGE (n)-[:IN_INDUSTRY]->(ic)
-			SET ic :Industry
 		`
 	}
 
