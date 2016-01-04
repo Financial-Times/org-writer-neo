@@ -3,8 +3,8 @@ package orgs
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Financial-Times/up-neoutil-go"
 	"github.com/Financial-Times/neoism"
+	"github.com/Financial-Times/up-neoutil-go"
 	"strings"
 )
 
@@ -84,8 +84,10 @@ func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{
 			SET n :Organisation
 		`
 
-	if o.Type != "Organisation" && o.Type != "" {
-		statement += fmt.Sprintf("SET n :%s\n", o.Type)
+	nextType := o.Type
+	for nextType != "Organisation" && nextType != "" {
+		statement += fmt.Sprintf("SET n :%s\n", nextType)
+		nextType = superTypes[nextType]
 	}
 
 	if o.ParentOrganisation != "" {
@@ -122,3 +124,9 @@ const (
 	fsAuthority  = "http://api.ft.com/system/FACTSET-EDM"
 	leiAuthority = "http://api.ft.com/system/LEI"
 )
+
+var superTypes = map[string]string{
+	"Organisation":  "",
+	"Company":       "Organisation",
+	"PublicCompany": "Company",
+}
