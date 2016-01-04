@@ -3,7 +3,7 @@ package orgs
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Financial-Times/neoism"
+	"github.com/jmcvetta/neoism"
 	"github.com/Financial-Times/up-neoutil-go"
 	"strings"
 )
