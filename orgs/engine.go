@@ -3,12 +3,14 @@ package orgs
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jmcvetta/neoism"
 	"github.com/Financial-Times/up-neoutil-go"
+	"github.com/jmcvetta/neoism"
 	"strings"
 )
 
-type RolesNeoEngine struct{}
+type RolesNeoEngine struct {
+	Cr neoutil.CypherRunner
+}
 
 func (bnc RolesNeoEngine) DecodeJSON(dec *json.Decoder) (interface{}, string, error) {
 	b := Organisation{}
@@ -24,11 +26,11 @@ func (bnc RolesNeoEngine) SuggestedIndexes() map[string]string {
 	}
 }
 
-func (bnc RolesNeoEngine) Read(cr neoutil.CypherRunner, identity string) (interface{}, bool, error) {
+func (bnc RolesNeoEngine) Read(identity string) (interface{}, bool, error) {
 	panic("not implemented")
 }
 
-func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{}) error {
+func (bnc RolesNeoEngine) CreateOrUpdate(obj interface{}) error {
 	o := obj.(Organisation)
 
 	p := map[string]interface{}{
@@ -108,10 +110,10 @@ func (bnc RolesNeoEngine) CreateOrUpdate(cr neoutil.CypherRunner, obj interface{
 		&neoism.CypherQuery{Statement: statement, Parameters: parms},
 	}
 
-	return cr.CypherBatch(queries)
+	return bnc.Cr.CypherBatch(queries)
 }
 
-func (bnc RolesNeoEngine) Delete(cr neoutil.CypherRunner, identity string) (bool, error) {
+func (bnc RolesNeoEngine) Delete(identity string) (bool, error) {
 	panic("not implemented")
 }
 
