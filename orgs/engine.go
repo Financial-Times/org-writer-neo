@@ -3,13 +3,13 @@ package orgs
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Financial-Times/up-neoutil-go"
+	"github.com/Financial-Times/neo-cypher-runner-go"
 	"github.com/jmcvetta/neoism"
 	"strings"
 )
 
 type RolesNeoEngine struct {
-	Cr neoutil.CypherRunner
+	Cr neocypherrunner.CypherRunner
 }
 
 func (bnc RolesNeoEngine) DecodeJSON(dec *json.Decoder) (interface{}, string, error) {
