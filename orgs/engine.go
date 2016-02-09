@@ -30,7 +30,7 @@ func (bnc RolesNeoEngine) Read(identity string) (interface{}, bool, error) {
 	panic("not implemented")
 }
 
-func (bnc RolesNeoEngine) CreateOrUpdate(obj interface{}) error {
+func (bnc RolesNeoEngine) Write(obj interface{}) error {
 	o := obj.(Organisation)
 
 	p := map[string]interface{}{
